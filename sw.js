@@ -1,8 +1,8 @@
 //import
 importScripts('js/sw-utils.js');
 
-const statyCache = 'static_v3';
-const dynamicCache = 'dynamic_v1';
+const statyCache = 'static_v4';
+const dynamicCache = 'dynamic_v2';
 const inmutableCache = 'inmutable_v1';
 
 const app_shell_staty= [
@@ -48,6 +48,10 @@ self.addEventListener('activate',e => {
     .then(keys => {
         keys.forEach(key => {
             if(key !== statyCache && key.includes('static')){
+                return caches.delete(key);
+            }
+
+            if(key !== dynamicCache && key.includes('dynamic')){
                 return caches.delete(key);
             }
         })
