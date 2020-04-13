@@ -3,7 +3,7 @@ importScripts('js/sw-utils.js');
 
 const statyCache = 'static_v5';
 const dynamicCache = 'dynamic_v2';
-const inmutableCache = 'inmutable_v1';
+const inmutableCache = 'inmutable_v0';
 
 const app_shell_staty= [
     // '/',
