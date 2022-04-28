@@ -1,11 +1,12 @@
 //import
 importScripts('js/sw-utils.js');
 
-const statyCache = 'static_v5';
-const dynamicCache = 'dynamic_v2';
-const inmutableCache = 'inmutable_v0';
 
-const app_shell_staty= [
+const STATIC_CACHE    = 'static-v6';
+const DYNAMIC_CACHE   = 'dynamic-v6';
+const INMUTABLE_CACHE = 'inmutable-v6';
+
+const APP_SHELL = [
     // '/',
     'index.html',
     'css/style.css',
@@ -15,66 +16,72 @@ const app_shell_staty= [
     'img/avatars/spiderman.jpg',
     'img/avatars/thor.jpg',
     'img/avatars/wolverine.jpg',
-    'js/app.js'
-]
+    'js/app.js',
+    'js/sw-utils.js',
+    'js/libs/plugins/mdtoast.min.js',
+    'js/libs/plugins/mdtoast.min.css'
+];
 
-const app_shel_inmutable = [
+const APP_SHELL_INMUTABLE = [
     'https://fonts.googleapis.com/css?family=Quicksand:300,400',
     'https://fonts.googleapis.com/css?family=Lato:400,300',
-    'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
-    'css/animate.css',
-    'js/libs/jquery.js'
-]
+    // 'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'
+];
 
-self.addEventListener('install',e => {
 
-    const cacheStaty= caches.open(statyCache)
-    .then(cacheS => {
-        cacheS.addAll(app_shell_staty);
-    })
 
-    const cacheInmutable= caches.open(inmutableCache)
-    .then(cacheI => {
-        cacheI.addAll(app_shel_inmutable);
-    })
 
-    e.waitUntil(Promise.all([cacheStaty,cacheInmutable]));
+self.addEventListener('install', e => {
 
-})
 
-self.addEventListener('activate',e => {
+    const cacheStatic = caches.open( STATIC_CACHE ).then(cache => 
+        cache.addAll( APP_SHELL ));
 
-    const elimnarCache = caches.keys()
-    .then(keys => {
-        keys.forEach(key => {
-            if(key !== statyCache && key.includes('static')){
+    const cacheInmutable = caches.open( INMUTABLE_CACHE ).then(cache => 
+        cache.addAll( APP_SHELL_INMUTABLE ));
+
+    e.waitUntil( Promise.all([ cacheStatic, cacheInmutable ])  );
+
+});
+
+self.addEventListener('activate', e => {
+
+    const respuesta = caches.keys().then( keys => {
+
+        keys.forEach( key => {
+
+            if (  key !== STATIC_CACHE && key.includes('static') ) {
                 return caches.delete(key);
             }
 
-            if(key !== dynamicCache && key.includes('dynamic')){
+            if (  key !== DYNAMIC_CACHE && key.includes('dynamic') ) {
                 return caches.delete(key);
             }
-        })
-    })
 
-    e.waitUntil(elimnarCache);
+        });
 
-})
+    });
 
+    e.waitUntil( respuesta );
+
+});
 
 self.addEventListener('fetch',e => {
 
-   const respuestaCache = caches.match(e.request)
-    .then(res => {
+   const respuestaCache = caches.match(e.request).then(res => {
         
         if(res){
+
             return res;
+
         }else{
-            console.log(e.request.url)
-            return fetch(e.request)
-            .then(newResp => {
-                return actualizaCacheDinamico(dynamicCache,e.request,newResp);
+
+            return fetch(e.request).then(newResp => {
+                return actualizaCacheDinamico(DYNAMIC_CACHE,e.request,newResp);
             })
+
         }
     })
 

@@ -135,3 +135,26 @@ postBtn.on('click', function() {
     crearMensajeHTML( mensaje, usuario );
 
 });
+
+function isOnline(){
+    if(navigator.onLine){
+
+        $.mdtoast('Se restauró la conexón a internet.', { //Se restauró la conexón a internet.
+            interaction: true,
+            interactionTimeout: 3000
+        });
+
+    }else{
+
+        $.mdtoast('En este momento no tienes conexión', { //En este momento no tienes conexión
+            interaction: true,
+            interactionTimeout: 3000
+        });
+
+    }
+}
+
+window.addEventListener('online',isOnline);
+window.addEventListener('offline',isOnline);
+
+isOnline();
